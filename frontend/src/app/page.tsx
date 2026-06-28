@@ -2,8 +2,6 @@
 
 import { FormEvent, useState } from "react";
 
-const API_BASE_URL = "http://localhost:8000";
-
 type ScanResult = {
   owner: string;
   repo: string;
@@ -33,7 +31,7 @@ export default function Home() {
     setResult(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/scan`, {
+      const response = await fetch("/api/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ github_url: trimmedUrl }),
@@ -46,14 +44,16 @@ export default function Home() {
           typeof data?.detail === "string"
             ? data.detail
             : "Unable to scan this repository. Please check the URL and try again.";
+        console.log("Scan request failed:", { status: response.status, data });
         setError(message);
         return;
       }
 
       setResult(data as ScanResult);
-    } catch {
+    } catch (scanError) {
+      console.log("Scan request error:", scanError);
       setError(
-        "Could not reach the backend. Make sure the API is running at http://localhost:8000.",
+        "Could not reach the backend. Make sure the API server is running.",
       );
     } finally {
       setIsLoading(false);
