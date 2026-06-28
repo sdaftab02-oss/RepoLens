@@ -17,6 +17,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleScan() {
+    console.log("Button clicked!");
     const trimmedUrl = githubUrl.trim();
 
     if (!trimmedUrl) {
