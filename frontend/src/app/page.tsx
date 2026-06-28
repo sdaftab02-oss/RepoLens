@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 
 type ScanResult = {
   owner: string;
@@ -16,8 +16,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleScan(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleScan() {
     const trimmedUrl = githubUrl.trim();
 
     if (!trimmedUrl) {
@@ -60,6 +59,12 @@ export default function Home() {
     }
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      void handleScan();
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center bg-zinc-50 px-6 py-16 font-sans dark:bg-zinc-950">
       <div className="w-full max-w-3xl">
@@ -72,26 +77,25 @@ export default function Home() {
           </p>
         </header>
 
-        <form
-          onSubmit={handleScan}
-          className="flex flex-col gap-3 sm:flex-row sm:items-center"
-        >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             type="url"
             value={githubUrl}
             onChange={(event) => setGithubUrl(event.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="https://github.com/owner/repository"
             className="w-full flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 shadow-sm outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
             disabled={isLoading}
           />
           <button
-            type="submit"
+            type="button"
+            onClick={() => void handleScan()}
             disabled={isLoading}
             className="rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >
             {isLoading ? "Scanning..." : "Scan Repository"}
           </button>
-        </form>
+        </div>
 
         {error && (
           <div
